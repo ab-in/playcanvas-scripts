@@ -132,7 +132,7 @@ pc.script.create('ui_text', function (context)
             this.textDiv = textDiv;
             
             if (this.secondsToAutoHide !== '')
-                setTimeout(function () { this.setVisibility(false); }.bind(this), this.secondsToAutoHide * 1000);
+                setTimeout(function () { this.setVisibility(false) }.bind(this), this.secondsToAutoHide * 1000);
         },
 
         setVisibility: function (visible)
@@ -140,7 +140,7 @@ pc.script.create('ui_text', function (context)
             this.div.style.visibility = visible ? 'visible' : 'hidden';
             
             if (this.secondsToAutoHide !== '')
-                setTimeout(function () { this.setVisibility(false); }.bind(this), this.secondsToAutoHide * 1000);
+                setTimeout(function () { this.setVisibility(false) }.bind(this), this.secondsToAutoHide * 1000);
         },
 
         setColor: function (color)

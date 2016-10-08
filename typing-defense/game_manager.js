@@ -3,6 +3,9 @@ pc.script.create('game_manager', function (context) {
     var Game_manager = function (entity) {
         this.entity = entity;
         this.paused = false;
+        this.correctKeystrokes = 0;
+        this.wrongKeystrokes = 0;
+        this.damageTaken = 0;
         this.enemySelected = null;
     };
 

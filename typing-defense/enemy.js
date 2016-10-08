@@ -3,7 +3,11 @@ pc.script.attribute('nameList', 'asset', []);
 pc.script.create('enemy', function (context) {
     var nameList = null;
     
-    var gameManager;
+    var gameManagerScript;
+    
+    var accuracyLabelScript;
+    
+    var damageTakenLabelScript;
     
     // Creates a new Enemy instance
     var Enemy = function (entity) {
@@ -16,11 +20,13 @@ pc.script.create('enemy', function (context) {
         initialize: function () {
             if (nameList === null)
             {
-                nameList = context.assets.getAssetById(this.nameList[0]).resource.split("\n");
+                nameList = context.assets.get(this.nameList[0]).resource.split(/(?:\r\n|\r|\n)/);
             }
             
             this.entity.script.label.text = nameList[Math.floor(pc.math.random(0, nameList.length))];
-            gameManager = context.root.findByName('GameManager');
+            gameManagerScript = context.root.findByName('GameManager').script.game_manager;
+            accuracyLabelScript = context.root.findByName('AccuracyLabel').script.ui_text;
+            damageTakenLabelScript = context.root.findByName('DamageTakenLabel').script.ui_text;
             
             this.entity.collision.on('contact', this.onContact, this);
         },
@@ -30,25 +36,41 @@ pc.script.create('enemy', function (context) {
         },
         
         damage: function () {
-            gameManager.script.game_manager.enemySelected = this.entity;
+            gameManagerScript.enemySelected = this.entity;
+            gameManagerScript.correctKeystrokes++;
+            this.updateAccuracyLabel();
             this.entity.script.label.removeFirstLetter();
             
             if (this.entity.script.label.text.length === 0)
             {
-                gameManager.script.game_manager.enemySelected = null;
+                gameManagerScript.enemySelected = null;
                 this.entity.destroy();
+            }
+        },
+        
+        avoid: function () {
+            gameManagerScript.wrongKeystrokes++;
+            this.updateAccuracyLabel();
+        },
+        
+        updateAccuracyLabel: function () {
+            if (gameManagerScript.correctKeystrokes > 0 || gameManagerScript.wrongKeystrokes > 0) {
+                var accuracy = gameManagerScript.correctKeystrokes / (gameManagerScript.wrongKeystrokes + gameManagerScript.correctKeystrokes);
+                accuracyLabelScript.setText("Accuracy: " + (accuracy * 100).toFixed(2) + "%");
             }
         },
         
         onContact: function (result) {
             if (result.other.rigidbody) {
+                gameManagerScript.damageTaken++;
+                damageTakenLabelScript.setText("Damage Taken: " + gameManagerScript.damageTaken);
                 this.entity.script.label.removeFirstLetter();
             
                 if (this.entity.script.label.text.length === 0)
                 {
-                    if (gameManager.script.game_manager.enemySelected == this.entity)
+                    if (gameManagerScript.enemySelected == this.entity)
                     {
-                        gameManager.script.game_manager.enemySelected = null;
+                        gameManagerScript.enemySelected = null;
                     }
                     
                     this.entity.destroy();

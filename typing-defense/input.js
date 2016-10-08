@@ -106,9 +106,13 @@ pc.script.create('input', function (context) {
         {
             if (gameManagerScript.enemySelected !== null)
             {
-                if (pc.string.startsWith(gameManagerScript.enemySelected.script.label.text.toLowerCase(), letter))
+                if (gameManagerScript.enemySelected.script.label.text.toLowerCase().startsWith(letter))
                 {
                     gameManagerScript.enemySelected.script.enemy.damage();
+                }
+                else
+                {
+                    gameManagerScript.enemySelected.script.enemy.avoid();
                 }
             }
             else
@@ -119,7 +123,7 @@ pc.script.create('input', function (context) {
                 
                 for (var i = 0; i < this.possibleTargets.length; i++)
                 {
-                    if (pc.string.startsWith(this.possibleTargets[i].script.label.text.toLowerCase(), letter))
+                    if (this.possibleTargets[i].script.label.text.toLowerCase().startsWith(letter))
                     {
                         if (enemyFound === null || this.distanceFromEntity(this.possibleTargets[i]) < this.distanceFromEntity(enemyFound))
                         {
